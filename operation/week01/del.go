@@ -21,27 +21,30 @@ func del[T any](arr []T, idx int) (ans []T, err error) {
 	n := len(arr)
 	if idx < 0 || idx >= n { // 索引不合法
 		ans, err = nil, fmt.Errorf("illegal parameter, index out of range [%d] with length %d", idx, n)
-	} else {
-		ans = append(arr[:idx], arr[idx+1:]...) // 删除元素
-		if ok, c := shrink(cap(arr), n-1); ok { // 是否缩容
-			ans = append(make([]T, 0, c), ans...)
-		}
+		return
+	}
+	ans = append(arr[:idx], arr[idx+1:]...) // 删除元素
+	if ok, c := shrink(cap(arr), n-1); ok { // 是否缩容
+		ans = append(make([]T, 0, c), ans...)
 	}
 	return
 }
 
 // shrink 缩容策略
+// 示例一：len=256，cap=767，缩容后cap=510。缩减了 256 个元素空间，同时还可以在不扩容的情况下添加 255 个元素
+// 示例二：len=1001，cap=1884，缩容后cap=1442。缩减了 442 个元素空间，同时还可以在不扩容的情况下添加 442 个元素
 // 参考源码 runtime/slice.go
 // func growslice(oldPtr unsafe.Pointer, newLen, oldCap, num int, et *_type) slice
 func shrink(c, n int) (ok bool, newC int) {
-	const threshold = 256 // 超过 256 后，扩容大小的策略改变
-	if c < 32 {           // 容量过小，不考虑
+	if c < 32 { // 容量过小，不考虑
 		return
-	} else if tt := threshold * 3; c < tt { // 容量 < 768
+	}
+	const threshold = 256            // 超过 256 后，扩容大小的策略改变
+	if tt := threshold * 3; c < tt { // 1.容量 < 768
 		if n*3 <= c { // 缩容的空间 >= 扩容的空间
 			ok, newC = true, n<<1
 		}
-	} else if tar := n + (n+tt)/4; tar < c { // 容量 >= 768 且 > 超过 256 后的扩容策略的扩容结果
+	} else if tar := n + (n+tt)/4; tar < c { // 2.容量 >= 768 且 > 超过 256 后的扩容策略的扩容结果
 		if c-tar >= tar-n { // 缩容的空间 >= 扩容的空间
 			ok, newC = true, tar
 		}
