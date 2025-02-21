@@ -23,9 +23,12 @@ func del[T any](arr []T, idx int) (ans []T, err error) {
 		ans, err = nil, fmt.Errorf("illegal parameter, index out of range [%d] with length %d", idx, n)
 		return
 	}
-	ans = append(arr[:idx], arr[idx+1:]...) // 删除元素
 	if ok, c := shrink(cap(arr), n-1); ok { // 是否缩容
-		ans = append(make([]T, 0, c), ans...)
+		ans = make([]T, idx, c) // 缩容
+		copy(ans, arr[:idx])
+		ans = append(ans, arr[idx+1:]...) // 删除元素
+	} else {
+		ans = append(arr[:idx], arr[idx+1:]...) // 删除元素
 	}
 	return
 }
