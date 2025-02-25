@@ -24,9 +24,8 @@ func del[T any](arr []T, idx int) (ans []T, err error) {
 		return
 	}
 	if ok, c := shrink(cap(arr), n-1); ok { // 是否缩容
-		ans = make([]T, idx, c) // 缩容
+		ans = append(make([]T, idx, c), arr[idx+1:]...) // 缩容并删除
 		copy(ans, arr[:idx])
-		ans = append(ans, arr[idx+1:]...) // 删除元素
 	} else {
 		ans = append(arr[:idx], arr[idx+1:]...) // 删除元素
 	}

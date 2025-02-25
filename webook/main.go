@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	hdl := &web.UserHandler{}
+	handler := &web.UserHandler{}
 	server := gin.Default()
-	hdl.RegisterRoutes(server)
+	handler.RegisterRoutes(server)
 
 	server.Run(":8080")
 }
