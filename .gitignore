@@ -26,4 +26,4 @@ go.work.sum
 
 # goland
 .idea/
-/webook-fe/
+webook-fe/
