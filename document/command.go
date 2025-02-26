@@ -1,4 +1,4 @@
-package go_junior
+package document
 
 /*
 run
