@@ -17,6 +17,26 @@
 
   ![dependency_02](E:\gothmslee\go-junior\document\operation\dependency_02.jpg)
   
+- 使用 Docker Compose 启动数据库
+  ![gland_docker_mysql](E:\gothmslee\go-junior\document\picture\gland_docker_mysql.jpg)
+
+  > 原因1：mysql 没启动，docker services 没启动
+  >
+  > ![goland_docker_mysql_sol](E:\gothmslee\go-junior\document\picture\goland_docker_mysql_sol.jpg)
+  >
+  > 然后在 services 中启动 docker
+  >
+  > 原因2：没有科学上网，或配置docker镜像
+  >
+  > ![gland_docker_mysql_sol_net](E:\gothmslee\go-junior\document\picture\gland_docker_mysql_sol_net.jpg)
+
+- goland 配置 mysql（测试 docker 启动 mysql 成功）
+  ![mysql_driver](E:\gothmslee\go-junior\document\operation\mysql_driver.jpg)
+
+  ![mysql_driver_password_root](E:\gothmslee\go-junior\document\operation\mysql_driver_password_root.jpg)
+
+  ![mysql_driver_done](E:\gothmslee\go-junior\document\operation\mysql_driver_done.jpg)
+
 - 
 
 ### npm

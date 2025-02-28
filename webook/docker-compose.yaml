@@ -1,0 +1,19 @@
+version: "3"
+# 这个 docker compose 由几个服务组成
+services:
+  mysql8:
+    image: mysql:8.0
+    restart: always
+    # 如何登录校验，mysql 的账号密码
+    # 开发环境一般这样配置
+    # 线上环境要么运行在 k8s 里，要么独立运行，很少在线上单独用 docker compose（一般用在单体应用，且单机部署）
+    command: --default_authentication_plugin=mysql_native_password
+    environment:
+      # 密码是 root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      # 挂载文件。这里挂载了一个文件用来初始化数据库,设置初始化脚本
+      - ./script/mysql/:/docker-entrypoint-initdb.d/
+    ports:
+      # 外部访问用 13316 端口
+      - "13316:3306"
