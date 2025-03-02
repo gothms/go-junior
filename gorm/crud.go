@@ -54,5 +54,12 @@ func main() {
 	// Delete - 删除 product
 	db.Delete(&product, 1)
 
+	var products []Product
+	ret := db.Find(&products)
+	fmt.Printf("%v \n", ret.RowsAffected)
+	for i, p := range products {
+		fmt.Printf("%d,%v \n", i, p)
+	}
+
 	fmt.Println("test")
 }

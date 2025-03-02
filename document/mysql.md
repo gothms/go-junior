@@ -42,6 +42,7 @@
 ### GORM
 
 - 声明模型：https://gorm.io/zh_CN/docs/models.html
+- 字段必须大写，否则不会Bind成功，也不会在数据库中创建该字段
 
 ### Docker
 

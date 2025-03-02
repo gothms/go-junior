@@ -16,4 +16,9 @@
 
 - 
   ![Gin插件库](E:\gothmslee\go-junior\document\todo\Gin插件库.jpg)
+- ![gorm插件库](E:\gothmslee\go-junior\document\todo\gorm插件库.jpg)
+- ![sql_review](E:\gothmslee\go-junior\document\todo\sql_review.jpg)
+
+### 第三周
+
 - 
