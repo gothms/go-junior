@@ -49,9 +49,9 @@ func (svc *UserService) Login(ctx *gin.Context, email string, password string) (
 	return u, nil
 }
 
-func (svc *UserService) Edit(ctx *gin.Context, id int64, nickname string, birthday string, personal string) error {
-	return svc.repo.UpdateUserInfo(ctx, id, nickname, birthday, personal)
+func (svc *UserService) UpdateNonSensitiveInfo(ctx *gin.Context, id int64, nickname string, birthday int64, personal string) error {
+	return svc.repo.UpdateNonZeroFields(ctx, id, nickname, birthday, personal)
 }
-func (svc *UserService) Profile(ctx *gin.Context, id int64) (domain.User, error) {
-	return svc.repo.FindPersonalInfoById(ctx, id)
+func (svc *UserService) FindUserById(ctx *gin.Context, id int64) (domain.User, error) {
+	return svc.repo.FindUserById(ctx, id)
 }

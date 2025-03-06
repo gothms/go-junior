@@ -5,6 +5,7 @@ import (
 	regexp "github.com/dlclark/regexp2"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"go-junior/webook/internal/domain"
 	"go-junior/webook/internal/service"
 	"net/http"
@@ -47,7 +48,8 @@ func (h *UserHandler) RegisterRoutes(server *gin.Engine) {
 	// 分组
 	ug := server.Group("/users")
 	ug.POST("/signup", h.SignUp) // POST /users/signup
-	ug.POST("/login", h.Login)
+	//ug.POST("/login", h.Login)
+	ug.POST("/login", h.LoginJWT)
 	ug.POST("/edit", h.Edit)
 	ug.GET("/profile", h.Profile) // 获取用户的基本信息
 }
@@ -114,7 +116,6 @@ func (h *UserHandler) SignUp(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "系统错误")
 	}
 }
-
 func (h *UserHandler) Login(ctx *gin.Context) {
 	type LoginReq struct {
 		Email    string `json:"email"`
@@ -131,11 +132,12 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		sess := sessions.Default(ctx)
 		sess.Set("userId", u.Id)
 		sess.Options(sessions.Options{
-			MaxAge: 900, // 15 分钟
+			//MaxAge: 900, // 15 分钟
+			MaxAge: 30, // 30秒
 		})
 		err = sess.Save() // Gin 需要 Save
 		if err != nil {
-			ctx.String(http.StatusOK, "系统错误")
+			ctx.String(http.StatusOK, "系统错误：%v", err)
 			return
 		}
 
@@ -146,7 +148,44 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "系统错误")
 	}
 }
+func (h *UserHandler) LoginJWT(ctx *gin.Context) {
+	type LoginReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	var req LoginReq
+	if err := ctx.Bind(&req); err != nil {
+		return
+	}
+	//fmt.Println(req.Email, req.Password)
+	u, err := h.svc.Login(ctx, req.Email, req.Password)
+	switch err {
+	case nil:
+		uc := UserClaims{
+			Uid: u.Id,
+			RegisteredClaims: jwt.RegisteredClaims{
+				// 30 分钟过期
+				//ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 5)),
+			},
+			UserAgent: ctx.GetHeader("User-Agent"),
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS512, uc)
+		// https://golang-jwt.github.io/jwt/usage/signing_methods/#signing-methods-and-key-types
+		tokenStr, err := token.SignedString(JWTKey)
+		if err != nil {
+			ctx.String(http.StatusOK, "系统错误")
+			return
+		}
+		ctx.Header("x-jwt-token", tokenStr)
 
+		ctx.String(http.StatusOK, "登录成功")
+	case service.ErrInvalidUserOrPassword:
+		ctx.String(http.StatusOK, "用户名或密码不对")
+	default:
+		ctx.String(http.StatusOK, "系统错误")
+	}
+}
 func (h *UserHandler) Edit(ctx *gin.Context) {
 	// nickname birthday personalProfile
 	type EditReq struct {
@@ -165,6 +204,7 @@ func (h *UserHandler) Edit(ctx *gin.Context) {
 		BirthdayFormat        = time.DateOnly
 		PersonalProfileMaxLen = 255
 	)
+	// 可以不用校验，因为 MySQL 本身会校验数据，而且不用考虑通过 postman 等访问接口的非正常“用户”的用户体验
 	// check nickname
 	if utf8.RuneCountInString(nickname) > NicknameMaxLen {
 		ctx.String(http.StatusOK, "昵称最多有 %d 个字符（含中英文）", NicknameMaxLen)
@@ -184,7 +224,7 @@ func (h *UserHandler) Edit(ctx *gin.Context) {
 	}
 
 	id := h.getIdFromSession(ctx)
-	err = h.svc.Edit(ctx, id, nickname, birthday, personal)
+	err = h.svc.UpdateNonSensitiveInfo(ctx, id, nickname, parse.Unix(), personal)
 	switch err {
 	case nil:
 		ctx.String(http.StatusOK, "userId = %d，资料修改成功", id)
@@ -196,10 +236,9 @@ func (h *UserHandler) Edit(ctx *gin.Context) {
 		return
 	}
 }
-
 func (h *UserHandler) Profile(ctx *gin.Context) {
 	id := h.getIdFromSession(ctx)
-	u, err := h.svc.Profile(ctx, id)
+	u, err := h.svc.FindUserById(ctx, id)
 	if err != nil {
 		ctx.String(http.StatusOK, "系统错误")
 		return
@@ -209,7 +248,7 @@ func (h *UserHandler) Profile(ctx *gin.Context) {
 		Birthday string `json:"birthday"`
 		Personal string `json:"personal"`
 	}{
-		Birthday: u.Birthday,
+		Birthday: u.Birthday.Format(time.DateOnly),
 		Nickname: u.Nickname,
 		Personal: u.Personal,
 	})
@@ -220,7 +259,14 @@ func (h *UserHandler) Profile(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "系统错误")
 	}
 }
-
 func (h *UserHandler) getIdFromSession(ctx *gin.Context) int64 {
 	return sessions.Default(ctx).Get("userId").(int64)
+}
+
+var JWTKey = []byte("SJuumCxv4u3b83VEktwfY56wZ2szrEUz")
+
+type UserClaims struct {
+	jwt.RegisteredClaims
+	Uid       int64
+	UserAgent string
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-junior/webook/internal/domain"
 	"go-junior/webook/internal/repository/dao"
+	"time"
 )
 
 var (
@@ -44,17 +45,17 @@ func (repo *UserRepository) toDomain(u dao.User) domain.User {
 func (repo *UserRepository) toDomainWithPersonalInfo(u dao.User) domain.User {
 	return domain.User{
 		Nickname: u.Nickname,
-		Birthday: u.Birthday,
+		Birthday: time.Unix(u.Birthday, 0),
 		Personal: u.Personal,
 	}
 }
 
-func (repo *UserRepository) UpdateUserInfo(ctx *gin.Context, id int64, nickname string, birthday string, personal string) error {
-	return repo.dao.UpdateUserInfo(ctx, id, nickname, birthday, personal)
+func (repo *UserRepository) UpdateNonZeroFields(ctx *gin.Context, id int64, nickname string, birthday int64, personal string) error {
+	return repo.dao.UpdateNonZeroFields(ctx, id, nickname, birthday, personal)
 }
 
-func (repo *UserRepository) FindPersonalInfoById(ctx *gin.Context, id int64) (domain.User, error) {
-	u, err := repo.dao.FindById(ctx, id)
+func (repo *UserRepository) FindUserById(ctx *gin.Context, id int64) (domain.User, error) {
+	u, err := repo.dao.FindUserById(ctx, id)
 	if err != nil {
 		return domain.User{}, err
 	}

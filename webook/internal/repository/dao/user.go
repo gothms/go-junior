@@ -27,9 +27,9 @@ type User struct {
 	Email    string `gorm:"unique"`
 	Password string
 
-	Nickname string // 必须大写，否则不会在数据库中创建字段
-	Birthday string
-	Personal string
+	Nickname string `gorm:"type=varchar(128)"` // 必须大写，否则不会在数据库中创建字段
+	Birthday int64
+	Personal string `gorm:"type=varchar(4096)"`
 
 	// 时区：服务器时区、Go应用时区、数据库时区，多个时区之间转换非常容易出错，则整个系统内部直接定义 UTC 0 的毫秒数
 	// 则让前端处理时区，或者在返回数据给前端时处理时区
@@ -57,12 +57,12 @@ func (dao *UserDAO) FindByEmail(ctx *gin.Context, email string) (User, error) {
 	return u, dao.db.WithContext(ctx).Where("email=?", email).First(&u).Error
 }
 
-func (dao *UserDAO) UpdateUserInfo(ctx *gin.Context, id int64, nickname string, birthday string, personal string) error {
+func (dao *UserDAO) UpdateNonZeroFields(ctx *gin.Context, id int64, nickname string, birthday int64, personal string) error {
 	//fmt.Println("edit:", id, nickname, birthday, personal)
 	return dao.db.WithContext(ctx).Where("id=?", id).
 		Updates(User{Nickname: nickname, Birthday: birthday, Personal: personal}).Error
 }
-func (dao *UserDAO) FindById(ctx *gin.Context, id int64) (User, error) {
+func (dao *UserDAO) FindUserById(ctx *gin.Context, id int64) (User, error) {
 	var u User
 	return u, dao.db.WithContext(ctx).Where("id=?", id).Find(&u).Error
 }

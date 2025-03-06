@@ -27,6 +27,24 @@ Gorm
 	登录：
 		mysql -u root -p -h 127.0.0.1
 		mysql -u root -p
+time.Time
+	数据库：int64 / sql.NullInt64
+	domain：time.Time
+	string 转 time.Time：time.Parse(time.DateOnly, birthday)
+	time.Time 转 string：timeVal.Format(time.DateOnly)
+	time.Time 转 int64：timeVal.Unix()
+	int64 转 time.Time：time.Unix(intVal, 0)
+gob
+	gob: type not registered for interface: time.Time
+		session 写入 redis 中的类型为 Go 的结构体 time.Time，需要用到 gob 的序列化机制
+		redis 中存入的是字节切片
+	注册
+		gob.Register(time.Now())
+jwt & 跨域
+	前端代码没有拿到 "x-jwt-token"，需要允许前端访问后端响应中带的头部
+		AllowHeaders: []string{"authorization"},
+		ExposeHeaders: []string{"x-jwt-token"},
+
 
 
 */

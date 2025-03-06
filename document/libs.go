@@ -14,5 +14,7 @@ GORM
 		查找 mysql driver
 BCrypt
 	golang.org/x/crypto/bcrypt
+JWT
+	github.com/golang-jwt/jwt/v5
 
 */
