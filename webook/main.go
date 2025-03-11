@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"go-junior/webook/config"
 	"go-junior/webook/internal/repository"
 	"go-junior/webook/internal/repository/dao"
 	"go-junior/webook/internal/service"
@@ -19,12 +21,13 @@ import (
 )
 
 func main() {
-	//db := initDB()
-	//
-	//server := initWebServer()
-	//
-	//initUserHandler(db, server)
-	server := gin.Default()
+	db := initDB()
+
+	server := initWebServer()
+
+	initUserHandler(db, server)
+
+	//server := gin.Default()
 	server.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "hello, 启动成功！")
 	})
@@ -33,7 +36,9 @@ func main() {
 }
 
 func initDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13316)/webook"))
+	//db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13316)/webook"))
+	fmt.Println(config.Config.DB.DSN)
+	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +76,8 @@ func initWebServer() *gin.Engine {
 
 	// 限流插件
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		//Addr: "localhost:6379",
+		Addr: config.Config.Redis.Addr,
 	})
 	server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
 

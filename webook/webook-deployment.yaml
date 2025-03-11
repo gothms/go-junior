@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webook-record
+spec:
+#  三个副本
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webook-record
+  template:
+    metadata:
+      labels:
+#        这个 webook-record 一定要和前面的 selector 的 matchLabels 匹配上
+        app: webook-record
+#        这个是 Deployment 管理的 Pod 的模板
+    spec:
+#      Pod 里面运行的所有的 container
+      containers:
+        - name: webook-record
+          image: gothms/webook:v0.0.1
+#          这会导致容器 只执行挂起命令，实际应用并未启动，因此 Service 和 Ingress 无法将流量转发到有效的后端，直接引发 502 错误
+#          command: ["/bin/bash", "-ce", "tail -f /dev/null"]
+#          command: ["/app/webook", "--port=8080"]
+          ports:
+            - containerPort: 8080

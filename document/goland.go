@@ -7,6 +7,7 @@ package document
 			设置用户名密码，使用Cookie登录
 			TempFilePath：E:\gothmslee\algo
 			勾选 Custom Template
+			不勾选 Show Topics
 			Code Template: 修改为
 				package main
 

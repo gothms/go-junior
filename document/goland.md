@@ -4,18 +4,18 @@
 
   - 最常用：package
 
-    ![run_package](E:\gothmslee\go-junior\document\operation\run_package.jpg)
+    ![run_package](E:\gothmslee\go-junior\document\goland\run_package.jpg)
 
   - 不常用：directory、file
 
-    ![run_directory](E:\gothmslee\go-junior\document\operation\run_directory.jpg)
+    ![run_directory](E:\gothmslee\go-junior\document\goland\run_directory.jpg)
 
 - 依赖同步：sync dependency
-  ![dependency_01](E:\gothmslee\go-junior\document\operation\dependency_01.jpg)
+  ![dependency_01](E:\gothmslee\go-junior\document\goland\dependency_01.jpg)
 
   > Alt+Enter
 
-  ![dependency_02](E:\gothmslee\go-junior\document\operation\dependency_02.jpg)
+  ![dependency_02](E:\gothmslee\go-junior\document\goland\dependency_02.jpg)
   
 - 使用 Docker Compose 启动数据库
   ![gland_docker_mysql](E:\gothmslee\go-junior\document\picture\gland_docker_mysql.jpg)
@@ -31,11 +31,29 @@
   > ![gland_docker_mysql_sol_net](E:\gothmslee\go-junior\document\picture\gland_docker_mysql_sol_net.jpg)
 
 - goland 配置 mysql（测试 docker 启动 mysql 成功）
-  ![mysql_driver](E:\gothmslee\go-junior\document\operation\mysql_driver.jpg)
+  ![mysql_driver](E:\gothmslee\go-junior\document\goland\mysql_driver.jpg)
 
-  ![mysql_driver_password_root](E:\gothmslee\go-junior\document\operation\mysql_driver_password_root.jpg)
+  ![mysql_driver_password_root](E:\gothmslee\go-junior\document\goland\mysql_driver_password_root.jpg)
 
-  ![mysql_driver_done](E:\gothmslee\go-junior\document\operation\mysql_driver_done.jpg)
+  ![mysql_driver_done](E:\gothmslee\go-junior\document\goland\mysql_driver_done.jpg)
+
+- Linux Edit Configurations
+
+  - linux 命令：GOOS=linux GOARCH=arm go build -o webook .
+
+  - Windows 下 goland 设置：注意 GOARCH=arm
+
+    > 否则编译的文件并不是在 linux 下可执行的
+
+    ![linux_build_setting](E:\gothmslee\go-junior\document\goland\linux_build_setting.png)
+
+  - 设置全局输出路径
+    
+    > 默认路径：C:\Users\sc\AppData\Local\JetBrains\GoLand2024.3\tmp\GoLand
+    
+    ![output_directory](E:\gothmslee\go-junior\document\goland\output_directory.jpg)
+    
+  - 
 
 - 
 
