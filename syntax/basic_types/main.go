@@ -30,6 +30,20 @@ func main() {
 	String()
 	Byte()
 	Bool()
+
+	// panic: runtime error: invalid memory address or nil pointer dereference
+	//var s *string
+	//fmt.Printf("string ptr test: %s", *s)
+
+	var s = "abc"
+	fmt.Printf("%p \n", &s)
+	str := strTest(s)
+	fmt.Printf("%p \n", &str)
+}
+
+func strTest(s string) string {
+	fmt.Printf("%p \n", &s)
+	return s
 }
 
 func ExtremeNum() {
